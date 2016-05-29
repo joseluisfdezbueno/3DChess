@@ -1,0 +1,39 @@
+﻿ 
+/*
+  Para incluir un modelo .obj en una escena se puede usar el siguiente código. 
+  
+Se asume que ya se tiene creado el nodo, de nombre "nodo", de donde se quiere colgar el modelo importado
+*/
+
+
+    
+Scene modelo = null; 
+    
+ObjectFile archivo = new ObjectFile (ObjectFile.RESIZE | ObjectFile.STRIPIFY | ObjectFile.TRIANGULATE );
+    
+try {
+      
+   modelo = archivo.load ("models/naveEspacial/naveEspacial.obj");
+    
+} catch (FileNotFoundException e) {
+      
+   System.err.println (e);
+      
+   System.exit(1);
+    
+} catch (ParsingErrorException e) {
+      
+   System.err.println (e);
+      
+   System.exit(1);
+    
+} catch (IncorrectFormatException e) {
+      
+   System.err.println (e);
+      
+   System.exit(1);
+    
+}
+    
+nodo.addChild ( modelo.getSceneGroup() );
+    
