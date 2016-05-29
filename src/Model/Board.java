@@ -102,8 +102,18 @@ public class Board extends BranchGroup{
                 if(allow && ((Pawn)piece).getInStart())     // si el peón está en la casilla de partida
                     ((Pawn)piece).setInStart(false);        // le indicamos que ya no lo está
             }else if(piece instanceof King){
-                
-            }                                                            
+                if(board[pos.getX()][pos.getY()]!=null)
+                    if(board[pos.getX()][pos.getY()].getColour() == piece.getColour())
+                        allow = false;
+                    else
+                        remove = true;                
+            }else if(piece instanceof Knight){
+                if(board[pos.getX()][pos.getY()]!=null)
+                    if(board[pos.getX()][pos.getY()].getColour() == piece.getColour())
+                        allow = false;
+                    else
+                        remove = true;
+            }
         }        
         
         // si el movimiento se permite actualizamos la matriz de board, posiciones....
@@ -112,7 +122,7 @@ public class Board extends BranchGroup{
                 this.removePiece(board[pos.getX()][pos.getY()]); 
             board[pos.getX()][pos.getY()] = piece;
             board[piece.getPosition().getX()][piece.getPosition().getY()] = null; // la posición anterior de la pieza la actualizamos a null
-            piece.setPosition(pos);
+            //piece.setPosition(pos);
         }
         
         return allow;
