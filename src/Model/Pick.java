@@ -101,15 +101,18 @@ public class Pick extends Behavior{
           
                         System.out.println("\n " + point.x + " " +  point.y + " " + point.z);
                         
-                        
-                        if(board.allowMove(selected, Position.point3dToBoardPosition(point))){
-                            selected.setPosition(Position.point3dToBoardPosition(point));
-                            board.changeTurn();
-    //                      board.enablePick(false);
-      //                    board.enablePieces(board.getTurn());
-                        
+                        if(selected.getPosition().equals(Position.point3dToBoardPosition(point))){
                             setStatus(status.SelectPiece);
-                        }   
+                            selected.downPiece(); // bajamos la pieza para elegir otra
+                        }else                                                   
+                            if(board.allowMove(selected, Position.point3dToBoardPosition(point))){
+                                selected.setPosition(Position.point3dToBoardPosition(point));
+                                board.changeTurn();
+        //                      board.enablePick(false);
+        //                    board.enablePieces(board.getTurn());
+                        
+                                setStatus(status.SelectPiece);
+                            }   
                         break;
      
                     default:

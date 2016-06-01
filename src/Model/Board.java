@@ -29,7 +29,7 @@ public class Board extends BranchGroup{
         this.setCapability(Node.ENABLE_PICK_REPORTING);
         this.setPickable(true);
         
-        myModel = new Model(modelPath);
+        myModel = new Model(modelPath, 0);
         scale = new Scale(10d);
         translate = new Translate(position);
         translate.setCapability(Group.ALLOW_CHILDREN_WRITE);
@@ -43,6 +43,7 @@ public class Board extends BranchGroup{
         // ------
         
         turn = Colour.White;
+        //Game.startTimer(turn);
         //this.enablePieces(turn);
     }
     
@@ -51,10 +52,14 @@ public class Board extends BranchGroup{
     }
     
     public void changeTurn(){
+        Game.stopTimer(turn);
+        
         if(turn == Colour.White)
             turn = Colour.Black;
         else
             turn = Colour.White;
+        
+        Game.startTimer(turn);
     }    
     
     public void addPiece(Piece piece) {

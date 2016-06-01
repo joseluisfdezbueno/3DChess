@@ -6,6 +6,7 @@
 package pkg3dchess;
 
 import GUI.ControlWindow;
+import Model.Game;
 import Model.Universe;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 import javax.media.j3d.Canvas3D;
@@ -31,8 +32,12 @@ public class Main {
         //Universo universo2 = new Universo(canvasVariable);
         // Se crea la GUI a partir del Canvas3D y del Universo
         ControlWindow controlWindow = new ControlWindow (canvas, universe);
+        
+        
+        Game.setControlWindow(controlWindow);
+        
         // Se muestra la ventana principal de la aplicación
-        controlWindow.showWindow();    
+        controlWindow.showWindow();            
     }
     
 }

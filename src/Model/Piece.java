@@ -33,9 +33,9 @@ public abstract class Piece extends BranchGroup{
         this.colour = colour;
         this.initialPosition = position;
         this.position = position;        
-        myModel = new Model(modelPath);
+        myModel = new Model(modelPath, 1);
         
-        scale = new Scale(1.5d);
+        scale = new Scale(0.8d);
         translate = new Translate(Position.giveBackDrawPosition(position));
                 
         scale.addChild(myModel);
@@ -70,6 +70,14 @@ public abstract class Piece extends BranchGroup{
         vector.y = vector.y + 2;
         this.translate.setTranslate(vector);        
     } 
+    
+    public void downPiece(){
+        //this.position = position;
+        Vector3d vector;
+        vector = Position.giveBackDrawPosition(this.position);
+        //vector.y = vector.y;
+        this.translate.setTranslate(vector);        
+    }     
     
     public abstract boolean validMove(Position pos);
     

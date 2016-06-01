@@ -6,10 +6,13 @@
 package GUI;
 
 import Model.Universe;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.media.j3d.Canvas3D;
 import javax.swing.JFrame;
+import javax.swing.Timer;
 
 /**
  *
@@ -20,43 +23,101 @@ public class ControlWindow extends JFrame {
     /**
      * Creates new form ControlWindow
      */
-  private Universe universe;
-  Visualization ventana1, ventana2;
+    private Universe universe;
+    private Visualization ventana1, ventana2;
+    private Timer whiteTimer, blackTimer;
 
-  public ControlWindow(Canvas3D canvas, Universe universe) {
+    public ControlWindow(Canvas3D canvas, Universe universe) {
         
-    super();    
-    this.universe = universe;
-    
-    initComponents();
-    setLocation (1000, 0);
-    addWindowListener(new WindowAdapter(){
-      @Override
-      public void windowClosing(WindowEvent e){
-        closeApp(0);
-      }
-    });
-   
-    // Pocición de las ventana
-    int posicion1[] = {0, 0};
-    
-   // Inicializamos la 1º ventana    
-    ventana1 = new Visualization (this, false, canvas, posicion1);
-    ventana1.setVisible(true);
+        super();    
+        this.universe = universe;
 
-    // Dejamos habilitado el toggle correspondiente a la cámara en perspectiva
-    this.tgPerspective.setSelected(true);
-    
-    pack();
+        initComponents();
+        setLocation (1000, 0);
+        addWindowListener(new WindowAdapter(){
+          @Override
+          public void windowClosing(WindowEvent e){
+            closeApp(0);
+          }
+        });
+
+        // Pocición de las ventana
+        int posicion1[] = {0, 0};
+
+       // Inicializamos la 1º ventana    
+        ventana1 = new Visualization (this, false, canvas, posicion1);
+        ventana1.setVisible(true);
+
+        // Dejamos habilitado el toggle correspondiente a la cámara en perspectiva
+        this.tgPerspective.setSelected(true);
+
+        //
+        this.cbAxes.setSelected(true);
+
+        // timers
+        whiteTimer = new Timer(1000, new ActionListener(){ // cada 1000 ms se ejecuta
+            int minutos = 15;
+            int segundos = 0;
+
+            public void actionPerformed(ActionEvent ev) {        
+                lbWhiteTime.setText(minutos + ":" + segundos);
+
+                if(segundos == 0 && minutos != 0){
+                    segundos = 60;
+                    minutos--;
+                }
+
+                if(segundos != 0)
+                    segundos--;                              
+            }
+        });
+
+        blackTimer = new Timer(1000, new ActionListener(){ // cada 1000 ms se ejecuta
+            int minutos = 15;
+            int segundos = 0;
+
+            public void actionPerformed(ActionEvent ev) {        
+                lbBlackTime.setText(minutos + ":" + segundos);
+
+                if(segundos == 0 && minutos != 0){
+                    segundos = 60;
+                    minutos--;
+                }
+
+                if(segundos != 0)
+                    segundos--;                              
+            }
+        });    
+
+        // inicializamos el temporizador de las fichas blancas
+        whiteTimer.start();
+
+        pack();    
     }
   
-  public void showWindow(){
-    setVisible(true);
-  }
+    public void startWhiteTime(){
+        whiteTimer.start();
+    }
 
-  void closeApp(int code){
-    universe.closeApp(code);
-  }
+    public void stopWhiteTime(){
+        whiteTimer.stop();
+    }  
+    
+    public void startBlackTime(){
+        blackTimer.start();
+    }
+
+    public void stopBlackTime(){
+        blackTimer.stop();
+    }      
+
+    public void showWindow(){
+      setVisible(true);
+    }
+
+    void closeApp(int code){
+      universe.closeApp(code);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -72,8 +133,14 @@ public class ControlWindow extends JFrame {
         jPanel2 = new javax.swing.JPanel();
         tgPlan = new javax.swing.JToggleButton();
         tgPerspective = new javax.swing.JToggleButton();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        lbWhiteTime = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        lbBlackTime = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Axes"));
 
@@ -122,11 +189,11 @@ public class ControlWindow extends JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(tgPlan)
                 .addGap(18, 18, 18)
+                .addComponent(tgPlan, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(tgPerspective)
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addGap(23, 23, 23))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -138,6 +205,71 @@ public class ControlWindow extends JFrame {
                 .addContainerGap(45, Short.MAX_VALUE))
         );
 
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Times Remaining"));
+
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("White"));
+
+        lbWhiteTime.setText("15:0");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(33, 33, 33)
+                .addComponent(lbWhiteTime)
+                .addContainerGap(36, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addComponent(lbWhiteTime)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Black"));
+
+        lbBlackTime.setText("15:0");
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(32, 32, 32)
+                .addComponent(lbBlackTime)
+                .addContainerGap(34, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(lbBlackTime)
+                .addContainerGap(39, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -145,18 +277,24 @@ public class ControlWindow extends JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(22, 22, 22)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(37, Short.MAX_VALUE))
         );
 
         pack();
@@ -194,6 +332,11 @@ public class ControlWindow extends JFrame {
     private javax.swing.JCheckBox cbAxes;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JLabel lbBlackTime;
+    private javax.swing.JLabel lbWhiteTime;
     private javax.swing.JToggleButton tgPerspective;
     private javax.swing.JToggleButton tgPlan;
     // End of variables declaration//GEN-END:variables

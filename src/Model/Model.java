@@ -21,15 +21,20 @@ public class Model extends BranchGroup{
     private ObjectFile archivo;
     private Scene modelo;
     
-    public Model(String ruta){
+    public Model(String ruta, int modo){
         this.setCapability(Group.ALLOW_CHILDREN_EXTEND);
         this.setCapability(Group.ALLOW_CHILDREN_WRITE);
-        
-        //tr = new Traslacion(new Vector3d (25.0f, 0.0f, 0.0f));
-        
-        archivo = new ObjectFile (ObjectFile.RESIZE | ObjectFile.STRIPIFY);        
+                      
+        //archivo = new ObjectFile (ObjectFile.RESIZE | ObjectFile.STRIPIFY);        
         //archivo = new ObjectFile (ObjectFile.STRIPIFY);
+        //archivo = new ObjectFile (ObjectFile.RESIZE);
         //archivo = new ObjectFile ();
+        
+        if(modo == 0)
+            archivo = new ObjectFile (ObjectFile.RESIZE | ObjectFile.STRIPIFY);                     
+        else if(modo == 1)
+            //archivo = new ObjectFile (ObjectFile.TRIANGULATE);
+            archivo = new ObjectFile (ObjectFile.STRIPIFY); 
         
         try {   
             modelo = archivo.load (ruta);          
@@ -37,7 +42,7 @@ public class Model extends BranchGroup{
             System.err.println (e);
             System.exit(1);
         }
-        this.addChild (modelo.getSceneGroup());        
+        this.addChild (modelo.getSceneGroup());         
         
     }
 

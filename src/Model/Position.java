@@ -16,10 +16,10 @@ public class Position{
     private int x;
     private int y;
     
-    private static final double halfWidth = 1.1111d;
-    private static final double width = 0.22222d;
-    private static final double pieceHeight = 2.7d;
-    private static final double surfaceBoardHeight= 0.06509518623352051d;
+    private static final double halfWidth = 1.1111d;    // respecto coordenadas del mundo
+    private static final double pieceHeight = 0.06509518623352051*10d; //2.7d; // respecto coordenadas del mundo    
+    private static final double width = 0.22222d;       // respecto coordenadas maestras
+    private static final double surfaceBoardHeight= 0.06509518623352051d;      // respecto coordenadas maestras
     
     Position(){
         this.x = 0;
@@ -31,6 +31,31 @@ public class Position{
         this.y = y;
     }
     
+    @Override
+    public boolean equals(Object obj){
+        if(obj == null)
+            return false;
+        if(obj == this)
+            return true;
+        
+        if (!(obj.getClass().getSimpleName().equals("Position")))
+            return false;
+        
+        Position mc = (Position) obj;
+        
+        if (!(x == mc.getX()))
+            return false;
+        if (!(y == mc.getY()))
+            return false;        
+        
+        return true;        
+    }
+    
+    public void setPosition(int x, int y){
+        this.x = x;
+        this.y = y;
+    }    
+    
     public int getX(){
         return x;
     }
@@ -39,10 +64,6 @@ public class Position{
         return y;
     }    
     
-    public void setPosition(int x, int y){
-        this.x = x;
-        this.y = y;
-    }
     
     public static Vector3d giveBackDrawPosition(Position p){
         Vector3d vector = new Vector3d();
