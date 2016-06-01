@@ -18,7 +18,8 @@ public class Rook extends Piece{
     @Override
     public boolean validMove(Position pos) {
         boolean valid = false;
-
+        if(position.getX()==pos.getX() || position.getY()==pos.getY())
+            valid = true;
     
         return valid;    
     }            

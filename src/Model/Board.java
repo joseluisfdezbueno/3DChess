@@ -107,17 +107,61 @@ public class Board extends BranchGroup{
                 if(allow && ((Pawn)piece).getInStart())     // si el peón está en la casilla de partida
                     ((Pawn)piece).setInStart(false);        // le indicamos que ya no lo está
             }else if(piece instanceof King){
+                System.out.println("Soy un Rey");
                 if(board[pos.getX()][pos.getY()]!=null)
                     if(board[pos.getX()][pos.getY()].getColour() == piece.getColour())
                         allow = false;
                     else
                         remove = true;                
             }else if(piece instanceof Knight){
+                System.out.println("Soy un caballo");
                 if(board[pos.getX()][pos.getY()]!=null)
                     if(board[pos.getX()][pos.getY()].getColour() == piece.getColour())
                         allow = false;
                     else
                         remove = true;
+            }else if (piece instanceof Rook){
+                System.out.println("Soy una torre");
+                if(recta(piece.getPosition(),pos))
+                {//si nos podemos mover
+                    if (board[pos.getX()][pos.getY()]!=null)
+                        if(board[pos.getX()][pos.getY()].getColour() == piece.getColour())
+                            allow = false;
+                        else    
+                            remove = true;
+                }else allow = false;
+            }else if (piece instanceof Bishop){
+                System.out.println("Soy un alfil");
+                if(diagonal(piece.getPosition(), pos))
+                {
+                    if (board[pos.getX()][pos.getY()]!=null)
+                    {
+                        if (board[pos.getX()][pos.getY()].getColour() == piece.getColour())
+                            allow =false;
+                        else
+                            remove = true;
+                    }
+                }else allow = false;
+                
+            }else if (piece instanceof Queen){
+                System.out.println("Soy la Reina");
+                if(recta(piece.getPosition(),pos))
+                {//si noifs podemos mover
+                    if (board[pos.getX()][pos.getY()]!=null)
+                        if(board[pos.getX()][pos.getY()].getColour() == piece.getColour())
+                            allow = false;
+                        else    
+                            remove = true;
+                }else if (diagonal(piece.getPosition(), pos))
+                {
+                    if (board[pos.getX()][pos.getY()]!=null)
+                    {
+                        if (board[pos.getX()][pos.getY()].getColour() == piece.getColour())
+                            allow =false;
+                        else
+                            remove = true;
+                    }
+                }else allow = false;
             }
         }        
         
@@ -133,6 +177,119 @@ public class Board extends BranchGroup{
         return allow;
     }
     
+    public boolean recta (Position ini, Position next){
+        if ( (ini.getX()<next.getX() || ini.getX()>next.getX() ) && ini.getY()==next.getY()){ //se mueve en el eje X
+            return rectaX(ini, next);
+        }else if ( (ini.getY()<next.getY() || ini.getY()>next.getY() ) && ini.getX()==next.getX() )//se mueve en el eje Y
+        {
+            return rectaY(ini, next);
+        }
+        return false;
+    }
+    
+    public boolean rectaX (Position ini, Position next){
+        System.out.println("Recta X");
+        int i,j;
+        if (ini.getX()<next.getX()){
+            i = ini.getX()+1;
+            j = next.getX()-1;
+        }else{
+            i = next.getX()+1;
+            j = ini.getX()-1;
+        }
+        for (; i <= j; i++){
+            if ( (board[i][ini.getY()]!=null)) return false;
+        }
+        
+        return true;
+    }
+    public boolean rectaY(Position ini, Position next){
+        System.out.println("Recta Y");
+        int i,j;
+        if (ini.getY()<next.getY()){
+            i = ini.getY()+1;
+            j = next.getY()-1;
+        }else{
+            i = next.getY()+1;
+            j = ini.getY()-1;
+        }
+        for (; i <= j; i++){
+            if ((board[ini.getX()][i]!=null) )return false;
+        }
+        return true;
+    }
+    public boolean diagonal (Position ini, Position next){
+        if(Math.abs(ini.getX()-next.getX())==Math.abs(ini.getY()-next.getY()) && Math.abs(ini.getX()-next.getX())==1)return true;
+        if( ini.getX()<next.getX() )//diagonal para arriba
+        {
+            if (ini.getY()<next.getY() )//diagonal para arriba derecha
+            {
+                return diagonalArD(ini, next);
+            }else{//diagonal para arriba izquierda
+                return diagonalArI(ini, next);
+            }
+        }else{//diagonal para abajo
+            if (ini.getY()<next.getY())//diagonal para abajo derecha
+            {
+                return diagonalAbD(ini, next);
+            }else{//diagonal para abajo izquierda
+                return diagonalAbI(ini, next);
+            }
+        }
+    }
+    public boolean diagonalArD (Position ini, Position next){
+        int i,j,k,l;
+        i = ini.getX()+1;
+        j = ini.getY()+1;
+        k = next.getX()-1;
+        l = next.getY()-1;
+        do{
+            if ( (board[i][j]!=null) )return false;
+            i++;
+            j++;
+        }while(i<=k && j<=l);
+        
+        return true;
+    }
+    public boolean diagonalArI(Position ini, Position next){
+        int i,j,k,l;
+        i = ini.getX()+1;
+        j = ini.getY()-1;
+        k = next.getX()-1;
+        l = next.getY()+1;
+        do{
+            if ( (board[i][j]!=null) )return false;
+            i++;
+            j--;
+        }while(i<=k && j>=l);
+        return true;
+    }
+    public boolean diagonalAbD (Position ini, Position next){
+        int i,j,k,l;
+        i = ini.getX()-1;
+        j = ini.getY()+1;
+        k = next.getX()+1;
+        l = next.getY()-1;
+        do{
+            if ( (board[i][j]!=null) )return false;
+            i--;
+            j++;
+        }while(i>=k && j<=l);
+        return true;
+    }
+    public boolean diagonalAbI(Position ini, Position next){
+        int i,j,k,l;
+        i = ini.getX()-1;
+        j = ini.getY()-1;
+        k = next.getX()+1;
+        l = next.getY()+1;
+        do{
+            if ( (board[i][j]!=null) )return false;
+            i--;
+            j--;
+        }while(i>=k && j>=l);
+        return true;
+    }
     /*
     void enablePick(boolean onOff){
         if(onOff){

@@ -17,9 +17,8 @@ public class Bishop extends Piece{
 
     @Override
     public boolean validMove(Position pos) {
-        boolean valid = true;
-
-    
+        boolean valid = false;
+        if( Math.abs(pos.getX()-position.getX())==Math.abs(pos.getY()-position.getY()))valid = true;
         return valid;    
     }
     

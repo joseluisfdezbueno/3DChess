@@ -18,8 +18,10 @@ public class Queen extends Piece{
     @Override
     public boolean validMove(Position pos) {
         boolean valid = false;
-
-    
+        if( (position.getX()==pos.getX() || position.getY()==pos.getY()) || 
+                ( Math.abs(pos.getX()-position.getX())==Math.abs(pos.getY()-position.getY()))){
+            valid = true;
+        }
         return valid;    
     }
     
