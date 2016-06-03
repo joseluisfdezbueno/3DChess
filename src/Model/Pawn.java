@@ -26,8 +26,8 @@ public class Pawn extends Piece{
     
     public void setInStart(boolean inStart) {
         this.inStart = inStart;
-    }       
-
+    }
+        
     @Override
     public boolean validMove(Position pos) {
         boolean valid = false;

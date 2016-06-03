@@ -10,17 +10,21 @@ package Model;
  * @author Jose
  */
 public class King extends Piece{
-    private boolean allowCasting;
+    private boolean allowCastling;
 
     public King(String modelPath, Colour colour, Position position) {
         super(modelPath, colour, position);
         
-        allowCasting =  false;
+        allowCastling =  true;
     }
     
-    public boolean getAllowCasting() {
-        return allowCasting;
+    public boolean getAllowCasting(){
+        return allowCastling;
     }
+    
+    public void setAllowCastling(boolean allow){
+        allowCastling = allow;
+    }    
     
 
     @Override
@@ -35,7 +39,7 @@ public class King extends Piece{
             valid = true;
         
         // si todavía está permitido el enroque, permitimos el movimiento extra
-        if(allowCasting)
+        if(allowCastling)
             if(pos.getX() - position.getX() == 0 && Math.abs(pos.getY() - position.getY()) == 2)
                 valid = true;
     

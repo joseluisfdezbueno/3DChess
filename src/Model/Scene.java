@@ -148,7 +148,7 @@ public class Scene extends BranchGroup{
         
         
         // Inicialmos el board y activamos pick
-        board.initialBoard();        
+        board.refreshBoard();        
         pick.setBoard(board);
         
         
