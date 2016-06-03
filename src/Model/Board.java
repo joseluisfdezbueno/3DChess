@@ -34,7 +34,11 @@ public class Board extends BranchGroup{
     // conotrola los jaques
     private boolean whiteCheck;
     private boolean blackCheck;
-   
+    
+    // posiciones reyes
+    private Position whiteKingPosition;
+    private Position blackKingPosition;
+
     
     public Board (String modelPath, Vector3d position){
         this.setCapability(Node.ENABLE_PICK_REPORTING);
@@ -63,6 +67,9 @@ public class Board extends BranchGroup{
         //this.enablePieces(turn);
         whiteCheck = false;
         blackCheck = false;
+        
+        whiteKingPosition = new Position(0, 4);
+        blackKingPosition = new Position(7, 4);        
     }
     
     public Colour getTurn(){
@@ -257,6 +264,7 @@ public class Board extends BranchGroup{
             }
         }   
         
+        // Comprobamos si había jaque
         if(piece.getColour() == Colour.White && whiteCheck)
             if(this.checkInPosition(pos, Colour.Black))
             
