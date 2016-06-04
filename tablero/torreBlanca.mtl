@@ -1,12 +1,13 @@
 # Blender MTL File: 'chessPieces.blend'
 # Material Count: 1
 
-newmtl MaterialBlanco
+newmtl woodlig1
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
-Kd 1.000000 0.021748 0.032257
-Ks 0.000000 0.000000 0.000000
-# Ke 0.000000 0.000000 0.000000
-# Ni 1.000000
+Kd 0.514510 0.451765 0.345098
+Ks 0.311765 0.319608 0.280392
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
 d 1.000000
 illum 2
+map_Kd woodlig1.bmp

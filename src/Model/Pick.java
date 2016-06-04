@@ -106,7 +106,7 @@ public class Pick extends Behavior{
                             selected.downPiece(); // bajamos la pieza para elegir otra
                         }else                                                   
                             if(board.allowMove(selected, Position.point3dToBoardPosition(point))){
-                                selected.setPosition(Position.point3dToBoardPosition(point));
+                                //selected.setPosition(Position.point3dToBoardPosition(point));
                                 board.changeTurn();
         //                      board.enablePick(false);
         //                    board.enablePieces(board.getTurn());
