@@ -200,11 +200,8 @@ public class Board extends BranchGroup{
                     }else
                         allow = false;
                     
-                }else
-                    allow = false;
-                    
-            if(!allow)    
-                System.out.println("fallo en el enroque");
+                }
+
             }else if(piece instanceof Knight){
                 System.out.println("Soy un caballo");
                 if(board[pos.getX()][pos.getY()]!=null) // comprobamos que podemos movernos a la posición
@@ -623,6 +620,13 @@ public class Board extends BranchGroup{
             }                
                 
         return check;
+    }
+    
+    public boolean thereICheckMate(){
+        boolean checkMate = false;
+        
+        
+        return checkMate;
     }
     
     /*
