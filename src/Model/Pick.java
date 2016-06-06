@@ -82,7 +82,7 @@ public class Pick extends Behavior{
                             //System.out.println(pi.getNode().getParent().getParent());
                             System.out.println(pi.getNode().getParent().getParent().getParent().getParent().getParent()); // shape3d -> branchGroup -> Model -> Scale -> Translate -> Piece
                             
-                            if(pi.getNode().getParent().getParent().getParent().getParent().getParent() instanceof Piece){ 
+                            if(pi.getNode().getParent().getParent().getParent().getParent().getParent() instanceof Piece){
                                 selected = (Piece)pi.getNode().getParent().getParent().getParent().getParent().getParent();
                                 if(selected.getColour() == board.getTurn()){
                                     ((Piece)pi.getNode().getParent().getParent().getParent().getParent().getParent()).upPiece();

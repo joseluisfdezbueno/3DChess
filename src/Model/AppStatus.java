@@ -11,8 +11,6 @@ package Model;
  */
 public enum AppStatus {
     SelectPiece,
-   // SelectPieceWhite,
-  //  SelectPieceBlack,    
     SelectBox,
     Nothing,
 }

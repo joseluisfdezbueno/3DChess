@@ -72,7 +72,8 @@ public class Universe extends BranchGroup{
                     
         // Axes 
         axes = new AxeLines(20f);
-        this.addChild(axes);               
+        this.addChild(axes);
+        this.showAxes(false);
                                
         // Se crea un SimpleUniverse con la vista en perspectiva por defecto
         this.universe = createUniverse (canvas);
