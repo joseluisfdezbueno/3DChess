@@ -25,9 +25,8 @@ public class Scene extends BranchGroup{
     private King king;
     private Queen queen;
     
-    private Pick pick;    
+    private Pick pick;
     private Canvas3D canvas;
-    private AppStatus status;
     
     
     public Scene(Canvas3D canvas){
@@ -150,23 +149,7 @@ public class Scene extends BranchGroup{
         // Inicialmos el board y activamos pick
         board.refreshBoard();        
         pick.setBoard(board);
-        
-        
-//        interact();
-        
-        
- 
+         
     }
-    
-    public void interact(){
         
-        /*
-        if(status == status.Nothing){
-            status = status.SelectPiece;
-            pick.setStatus(status);            
-        }
-        */        
-        
-    }
-
 }

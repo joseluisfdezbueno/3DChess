@@ -5,6 +5,8 @@
  */
 package GUI;
 
+import Model.Colour;
+import Model.Game;
 import Model.Universe;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,16 +61,20 @@ public class ControlWindow extends JFrame {
             int minutos = 15;
             int segundos = 0;
 
-            public void actionPerformed(ActionEvent ev) {        
-                lbWhiteTime.setText(minutos + ":" + segundos);
+            public void actionPerformed(ActionEvent ev) { 
+                if(segundos != 0 || minutos != 0){
+                    lbWhiteTime.setText(minutos + ":" + segundos);
 
-                if(segundos == 0 && minutos != 0){
-                    segundos = 60;
-                    minutos--;
-                }
+                    if(segundos == 0 && minutos != 0){
+                        segundos = 60;
+                        minutos--;
+                    }
 
-                if(segundos != 0)
-                    segundos--;                              
+                    if(segundos != 0)
+                        segundos--;
+                    
+                }else
+                    Game.winner(Colour.Black);
             }
         });
 
@@ -76,16 +82,20 @@ public class ControlWindow extends JFrame {
             int minutos = 15;
             int segundos = 0;
 
-            public void actionPerformed(ActionEvent ev) {        
-                lbBlackTime.setText(minutos + ":" + segundos);
+            public void actionPerformed(ActionEvent ev) {
+                if(segundos != 0 || minutos != 0){
+                    lbBlackTime.setText(minutos + ":" + segundos);
 
-                if(segundos == 0 && minutos != 0){
-                    segundos = 60;
-                    minutos--;
-                }
+                    if(segundos == 0 && minutos != 0){
+                        segundos = 60;
+                        minutos--;
+                    }
 
-                if(segundos != 0)
-                    segundos--;                              
+                    if(segundos != 0)
+                        segundos--;
+                    
+                }else
+                    Game.winner(Colour.White);
             }
         });    
 
@@ -110,6 +120,14 @@ public class ControlWindow extends JFrame {
     public void stopBlackTime(){
         blackTimer.stop();
     }      
+    
+    public void setTimeBlack(String text){
+        this.lbBlackTime.setText(text);
+    }
+    
+    public void setTimeWhite(String text){
+        this.lbWhiteTime.setText(text);
+    }    
 
     public void showWindow(){
       setVisible(true);

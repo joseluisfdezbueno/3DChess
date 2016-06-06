@@ -25,7 +25,7 @@ public class Board extends BranchGroup{
     private Colour turn;
     private Piece[][] board = new Piece[8][8];
     
-    // permite el enroque    
+    // controla si se permite hacer los enroques
     private boolean allowRWCastling; // blancas a derechas
     private boolean allowLWCastling;
     private boolean allowRBCastling;
@@ -38,7 +38,9 @@ public class Board extends BranchGroup{
     // posiciones reyes
     private Position whiteKingPosition;
     private Position blackKingPosition;
-
+    
+    // controla el fin del juego
+    private boolean endGame;
     
     public Board (String modelPath, Vector3d position){
         this.setCapability(Node.ENABLE_PICK_REPORTING);
@@ -55,9 +57,7 @@ public class Board extends BranchGroup{
         this.addChild(translate);        
         
         myPieces = new ArrayList<>();     
-        
-        // ------
-        
+               
         turn = Colour.White;
         allowRWCastling = true;
         allowLWCastling = true;
@@ -69,13 +69,22 @@ public class Board extends BranchGroup{
         blackCheck = false;
         
         whiteKingPosition = new Position(0, 4);
-        blackKingPosition = new Position(7, 4);        
+        blackKingPosition = new Position(7, 4);
+        
+        endGame = false;
     }
     
+    // devuelve si el juego se ha acabado
+    public boolean getEndGame(){
+        return endGame;
+    }
+    
+    // devuelve de quien es el turno actual del juego
     public Colour getTurn(){
         return turn;
     }
     
+    // realiza un cambio de turno
     public void changeTurn(){
         Game.stopTimer(turn);
         
@@ -87,30 +96,38 @@ public class Board extends BranchGroup{
         Game.startTimer(turn);
     }    
     
+    // añade una pieza al grafo de escena, y al array de piezas
     public void addPiece(Piece piece) {
         myPieces.add(piece);
         translate.addChild(piece);
     }
     
+    // elimina una pieza del grafo de escena y del array de piezas
     public void removePiece(Piece piece){
         myPieces.remove(piece);
         translate.removeChild(piece);
     }
     
+    /*
+    // inicia las posiciones iniiciales de las pieza
     public void initialPositionPieces(){
         for (Piece p : myPieces)
             p.initialPosition();
     }
+    */
     
+    // actualiza la matriz del tablero con las piezas
     public void refreshBoard(){
         for (Piece p : myPieces)
             board[p.position.getX()][p.position.getY()] = p;     
     }    
     
+    // 
     public void addPieceBoard(Piece piece){
         board[piece.getPosition().getX()][piece.getPosition().getY()] = piece;  
     }
     
+    // devuelve si se puede realizar el movimiento de una pieza a una posición en la partida
     public boolean allowMove(Piece piece, Position pos){
         boolean allow = false;
         boolean remove = false;  // indica si se elimina una pieza que huebiera en pos
@@ -255,7 +272,7 @@ public class Board extends BranchGroup{
             }
         }       
         
-        // Comprobamos si no habia jaque, y en tal caso, comprobamos que sólo podemos movernos a una casilla sin amenza
+        // Comprobamos si no habia jaque, y en tal caso, comprobamos que sólo podemos movernos a una casilla sin amenaza
         if(allow && (turn == Colour.White && !whiteCheck || turn == Colour.Black && !blackCheck)){
             Position auxPos = piece.getPosition();
             Piece auxPiece = null;            
@@ -367,8 +384,7 @@ public class Board extends BranchGroup{
             }else
                 board[pos.getX()][pos.getY()] = null;            
         }
-                        
-        
+                                
         // si finalmente el movimiento se permite....
         if(allow){            
             
@@ -420,19 +436,41 @@ public class Board extends BranchGroup{
             // Comprobamos si estamos produciendo un jaque al rival
             if(turn == Colour.White){
                 this.blackCheck = checkInPosition(this.blackKingPosition, Colour.White);
-                if(blackCheck)
+                if(blackCheck){
+                    if(this.isThereCheckMate(piece.getPosition(), blackKingPosition,  Colour.White)){
+                        Game.winner(Colour.White);
+                        endGame = true;
+                        //Scene.setPickMode(AppStatus.Nothing);
+                        System.out.println("Jaque MATE a las NEGRAS");
+                    }
                     System.out.println("Jaque a las negras");
+                }
             }
             
             if(turn == Colour.Black){
                 this.whiteCheck = checkInPosition(this.whiteKingPosition, Colour.Black);
-                if(whiteCheck)
-                    System.out.println("Jaque a las blancas");                
-            }                                            
+                if(whiteCheck){
+                    if(this.isThereCheckMate(piece.getPosition(), whiteKingPosition,  Colour.Black)){
+                        Game.winner(Colour.Black);
+                        endGame = true;
+                        //Scene.setPickMode(AppStatus.Nothing);
+                        System.out.println("Jaque MATE a las BLANCAS");                        
+                    }
+                    System.out.println("Jaque a las blancas");
+                }
+            }
+            
+            if(this.isThereStaleMate()){  // comprobamos si hay tablas
+                //Scene.setPickMode(AppStatus.Nothing);
+                endGame = true;
+                Game.staleMate();
+            }
+            
         }            
         return allow;    
     }
     
+    // devuelve si se puede mover una pieza en la misma fila o columna
     public boolean recta (Position ini, Position next){
         if ( (ini.getX()<next.getX() || ini.getX()>next.getX() ) && ini.getY()==next.getY()){ //se mueve en el eje X
             return rectaX(ini, next);
@@ -475,6 +513,8 @@ public class Board extends BranchGroup{
         }
         return true;
     }
+    
+    // devuelve si se puede mover una pieza diagonalmente
     public boolean diagonal (Position ini, Position next){
         if(Math.abs(ini.getX()-next.getX())==Math.abs(ini.getY()-next.getY()) && Math.abs(ini.getX()-next.getX())==1)return true;
         if( ini.getX()<next.getX() )//diagonal para arriba
@@ -566,11 +606,10 @@ public class Board extends BranchGroup{
         this.removePiece(pawn);
         
         this.addPiece(queen);
-        this.addPieceBoard(queen);
-        //Queen e = (Queen)this;
+        this.addPieceBoard(queen);      
     }    
     
-    
+    // Devuelve si las piezas de un color dan jaque a una posición dada 
     public boolean checkInPosition(Position pos, Colour colour){ // devuelve si hay jaque a una posición por un color
         boolean check = false;
         
@@ -622,13 +661,383 @@ public class Board extends BranchGroup{
         return check;
     }
     
-    public boolean thereICheckMate(){
-        boolean checkMate = false;
+    // Devuelve un arraylist con las posiciones intermedias entre 2 posiciones dadas
+    public ArrayList<Position> getPossBetweenPoss(Position ini, Position next){
+        ArrayList<Position> positions = new ArrayList();
+        int i, j, k, l;
         
+        if((ini.getX()==next.getX() && ini.getY()!=next.getY()) || (ini.getX()!=next.getX() && ini.getY()==next.getY())){ // línea recta
+            if(ini.getX()==next.getX()){ // se mueve en la línea horizontal                        
+                if (ini.getY()<next.getY()){
+                    i = ini.getY()+1;
+                    j = next.getY()-1;
+                }else{
+                    i = next.getY()+1;
+                    j = ini.getY()-1;
+                }
+                for (; i <= j; i++)
+                    positions.add(new Position(ini.getX(), i));
+           
+            }else{   // se mueve en la línea vertical
+                if (ini.getX()<next.getX()){
+                    i = ini.getX()+1;
+                    j = next.getX()-1;
+                }else{
+                    i = next.getX()+1;
+                    j = ini.getX()-1;
+                }
+                for (; i <= j; i++)
+                    positions.add(new Position(i, ini.getY()));
+                                                                     
+            }
+        
+        }else if(Math.abs(ini.getX()-next.getX())==Math.abs(ini.getY()-next.getY())
+                && (Math.abs(ini.getX()-next.getX())==Math.abs(ini.getY()-next.getY()) && Math.abs(ini.getX()-next.getX())==1)){ // diagonal
+                                  
+            if( ini.getX()<next.getX() ){  //diagonal para arriba
+                if (ini.getY()<next.getY() ){  //diagonal para arriba derecha
+                    i = ini.getX()+1;
+                    j = ini.getY()+1;
+                    k = next.getX()-1;
+                    l = next.getY()-1;
+                    do{
+                        positions.add(new Position(i, j));
+                        i++;
+                        j++;
+                    }while(i<=k && j<=l);
+            
+                }else{  // arriba a la izquierda
+                    i = ini.getX()+1;
+                    j = ini.getY()-1;
+                    k = next.getX()-1;
+                    l = next.getY()+1;
+                    do{
+                        positions.add(new Position(i, j));
+                        i++;
+                        j--;
+                    }while(i<=k && j>=l);                    
+                }
+            }else{ //diagonal para abajo
+                if (ini.getY()<next.getY() ){ // abajo a la derecha
+                    i = ini.getX()-1;
+                    j = ini.getY()+1;
+                    k = next.getX()+1;
+                    l = next.getY()-1;
+                    do{
+                        positions.add(new Position(i, j));
+                        i--;
+                        j++;
+                    }while(i>=k && j<=l);                                                            
+                }else{   // abajo a la izquierda
+                    i = ini.getX()-1;
+                    j = ini.getY()-1;
+                    k = next.getX()+1;
+                    l = next.getY()+1;
+                    do{
+                        positions.add(new Position(i, j));
+                        i--;
+                        j--;
+                    }while(i>=k && j>=l);                                        
+                }                                
+            }
+                
+        }else
+            positions = null;
+        
+        
+        return positions;
+    }
+    
+    // devuelve si podemos mover una pieza, donde no sufra jaque nuestro rey
+    public boolean moveWithoutCheck(Piece piece, Position pos, boolean remove){
+        boolean allow = true;
+        //boolean remove = false;
+        Position kingPosition = null;
+        Piece auxPiece = null;
+        Position auxPos = piece.getPosition();   
+                
+        if(piece.getColour() == Colour.White) // si es el turno de las blancas
+            kingPosition = this.whiteKingPosition;
+                        
+            // simulamos el board que se va a producir si movemos la pieza seleccionada
+            if(remove){
+                auxPiece = board[pos.getX()][pos.getY()];
+                myPieces.remove(auxPiece);
+            }
+            board[pos.getX()][pos.getY()] = piece;
+            board[piece.getPosition().getX()][piece.getPosition().getY()] = null;
+            piece.setPositionNotDraw(pos);
+                        
+            if(piece instanceof King)
+                kingPosition = piece.getPosition();
+            if(piece.getColour() == Colour.White){
+                if(this.checkInPosition(kingPosition, Colour.Black))
+                    allow = false;
+            }else
+                if(this.checkInPosition(kingPosition, Colour.White))
+                    allow = false;                
+            //else
+            //    whiteCheck = false;
+            
+            // volvemos el board a su forma original
+            piece.setPositionNotDraw(auxPos);
+            board[piece.getPosition().getX()][piece.getPosition().getY()] = piece;
+            if(remove){
+                board[pos.getX()][pos.getY()] = auxPiece;
+                myPieces.add(auxPiece);
+            }else 
+                board[pos.getX()][pos.getY()] = null;
+        
+        return allow;
+    }
+    
+               
+    // devuelve si el rey puede moverse a alguna posición a su alrededor. Colour: color del rey
+    public boolean anyMoveForKing(Colour colour){
+        boolean allow = false;
+        Position kingPosition = null;
+        Piece piece = null;
+        int xPosition;
+        int yPosition;                
+        
+        if(colour == Colour.White){
+            kingPosition = this.whiteKingPosition;            
+        }else
+            kingPosition = this.blackKingPosition;
+        
+        piece = board[kingPosition.getX()][kingPosition.getY()];
+        
+        // arriba a la izq
+        xPosition = kingPosition.getX()+1;
+        yPosition = kingPosition.getY()-1;
+                
+        if(xPosition >= 0 && yPosition >= 0){
+            if(board[xPosition][yPosition]!=null){ // arriba a la izq
+                if(board[xPosition][yPosition].getColour() == piece.getColour())
+                    allow = false;
+                else
+                    allow = moveWithoutCheck(piece, kingPosition, true);
+            }else
+                allow = moveWithoutCheck(piece, kingPosition, false);
+        }
+        
+        // arriba
+        xPosition = kingPosition.getX()+1;
+        yPosition = kingPosition.getY();
+        if(xPosition >= 0 && yPosition >= 0){
+            
+            if(board[xPosition][yPosition]!=null){ // arriba a la izq
+                if(board[xPosition][yPosition].getColour() == piece.getColour())
+                    allow = false;
+                else
+                    allow = moveWithoutCheck(piece, kingPosition, true);
+            }else
+                allow = moveWithoutCheck(piece, kingPosition, false);
+        }
+        
+        // arriba a la der
+        xPosition = kingPosition.getX()+1;
+        yPosition = kingPosition.getY()+1;
+        if(xPosition >= 0 && yPosition >= 0){
+            
+            if(board[xPosition][yPosition]!=null){ // arriba a la izq
+                if(board[xPosition][yPosition].getColour() == piece.getColour())
+                    allow = false;
+                else
+                    allow = moveWithoutCheck(piece, kingPosition, true);
+            }else
+                allow = moveWithoutCheck(piece, kingPosition, false);
+        }
+        
+        // a la izq
+        xPosition = kingPosition.getX();
+        yPosition = kingPosition.getY()-1;
+        if(xPosition >= 0 && yPosition >= 0){
+            
+            if(board[xPosition][yPosition]!=null){ // arriba a la izq
+                if(board[xPosition][yPosition].getColour() == piece.getColour())
+                    allow = false;
+                else
+                    allow = moveWithoutCheck(piece, kingPosition, true);
+            }else
+                allow = moveWithoutCheck(piece, kingPosition, false);
+        }
+        
+        // a la der
+        xPosition = kingPosition.getX();
+        yPosition = kingPosition.getY()+1;
+        if(xPosition >= 0 && yPosition >= 0){
+            
+            if(board[xPosition][yPosition]!=null){ // arriba a la izq
+                if(board[xPosition][yPosition].getColour() == piece.getColour())
+                    allow = false;
+                else
+                    allow = moveWithoutCheck(piece, kingPosition, true);
+            }else
+                allow = moveWithoutCheck(piece, kingPosition, false);
+        }
+        
+        // abajo a la izq
+        xPosition = kingPosition.getX()-1;
+        yPosition = kingPosition.getY()-1;
+        if(xPosition >= 0 && yPosition >= 0){
+            
+            if(board[xPosition][yPosition]!=null){ // arriba a la izq
+                if(board[xPosition][yPosition].getColour() == piece.getColour())
+                    allow = false;
+                else
+                    allow = moveWithoutCheck(piece, kingPosition, true);
+            }else
+                allow = moveWithoutCheck(piece, kingPosition, false);
+        }
+        
+        // abajo
+        xPosition = kingPosition.getX()-1;
+        yPosition = kingPosition.getY();
+        if(xPosition >= 0 && yPosition >= 0){
+            
+            if(board[xPosition][yPosition]!=null){ // arriba a la izq
+                if(board[xPosition][yPosition].getColour() == piece.getColour())
+                    allow = false;
+                else
+                    allow = moveWithoutCheck(piece, kingPosition, true);
+            }else
+                allow = moveWithoutCheck(piece, kingPosition, false);
+        }
+        
+        // abajo a la der
+        xPosition = kingPosition.getX()-1;
+        yPosition = kingPosition.getY()+1;
+        if(xPosition >= 0 && yPosition >= 0){
+            
+            if(board[xPosition][yPosition]!=null){ // arriba a la izq
+                if(board[xPosition][yPosition].getColour() == piece.getColour())
+                    allow = false;
+                else
+                    allow = moveWithoutCheck(piece, kingPosition, true);
+            }else
+                allow = moveWithoutCheck(piece, kingPosition, false);
+        }
+
+        return allow;
+    }    
+    
+    
+    // devuelve si hay o no jaque mate
+    public boolean isThereCheckMate(Position checkPosition, Position kingPosition, Colour colour){
+        boolean checkMate = true;
+        ArrayList<Position> positions = new ArrayList();
+                
+        // comprobamos si alguna de las piezas puede comerse a la que nos da jaque
+        if(colour == Colour.Black) // si el jaque es de las negras a las blancas
+            if(this.checkInPosition(checkPosition, Colour.White))
+                checkMate = false;
+        else
+            if(this.checkInPosition(checkPosition, Colour.Black))
+                checkMate = false;
+        
+        // si no podemos comernos la pieza que nos da jaque, vamos, si hay alguna pieza que podamos poner por medio, entre ella y el rey
+        if(checkMate){
+            positions = getPossBetweenPoss(checkPosition, kingPosition); // obtenemos las posiciones intermedias
+            if(positions != null){
+                for(Position p : positions){
+                    if(colour == Colour.Black) // si el jaque es de las negras a las blancas
+                        if(this.checkInPosition(p, Colour.White))
+                            checkMate = false;
+                    else
+                        if(this.checkInPosition(p, Colour.Black))
+                            checkMate = false;                
+                }
+            }
+        }
+        
+        // comprobamos si con algún movimiento del rey deja de haber jaque mate
+        if(checkMate){
+            if(colour == Colour.Black) // si el jaque es de las negras a las blancas
+                if(anyMoveForKing(Colour.White))
+                    checkMate = false;
+            else
+                if(anyMoveForKing(Colour.Black))
+                    checkMate = false;                        
+        }                                        
         
         return checkMate;
     }
     
+    
+    // Devuelve si se ha producido tablas o no
+    public boolean isThereStaleMate(){
+        boolean staleMate = false;
+        Piece whiteBishopPiece = null;
+        Piece blackBishopPiece = null;        
+        
+        boolean whitePawn = false, whiteRook = false, whiteKnight = false, whiteBishop = false, whiteQueen = false, whiteKnight2 = false, whiteBishop2 = false;
+        boolean blackPawn = false, blackRook = false, blackKnight = false, blackBishop = false, blackQueen = false, blackKnight2 = false, blackBishop2 = false;
+        
+        // comprobamos las piezas que tenemos en el tablero
+        for(Piece p : myPieces){
+            if(p.getColour() == Colour.White){
+                if(p instanceof Pawn)
+                    whitePawn = true;
+                else if(p instanceof Rook)
+                    whiteRook = true;
+                else if(p instanceof Knight && !whiteKnight)
+                    whiteKnight = true;
+                else if(p instanceof Knight)
+                    whiteKnight2 = true;                
+                else if(p instanceof Bishop && !whiteBishop){
+                    whiteBishop = true;
+                    whiteBishopPiece = p;
+                }else if(p instanceof Bishop)
+                    whiteBishop2 = true;                
+                else if(p instanceof Queen)
+                    whiteQueen = true;                
+            }else{
+                if(p instanceof Pawn)
+                    blackPawn = true;
+                else if(p instanceof Rook)
+                    blackRook = true;
+                else if(p instanceof Knight && !blackKnight)
+                    blackKnight = true;
+                else if(p instanceof Knight)
+                    blackKnight2 = true;                
+                else if(p instanceof Bishop && !blackBishop){
+                    blackBishop = true;
+                    blackBishopPiece = p;                    
+                }else if(p instanceof Bishop)
+                    blackBishop2 = true;                
+                else if(p instanceof Queen)
+                    blackQueen = true;                    
+                                                
+            }                                
+        }
+        
+        if(!whitePawn && !whiteRook && !whiteKnight && !whiteBishop && !whiteQueen   // rey solo contra rey
+                && !blackPawn && !blackRook && !blackKnight && !blackBishop && !blackQueen)
+            staleMate = true;
+        else if(!whitePawn && !whiteRook && !whiteKnight && !whiteBishop && !whiteQueen   // solo rey blanco contra rey y caballo negros
+                && !blackPawn && !blackRook && blackKnight && !blackKnight2 && !blackBishop && !blackQueen)
+            staleMate = true;
+        else if(!whitePawn && !whiteRook && whiteKnight && !whiteKnight2 && !whiteBishop && !whiteQueen   // rey y caballo blancos, solo contra rey negro
+                && !blackPawn && !blackRook && !blackKnight && !blackBishop && !blackQueen)
+            staleMate = true;
+        else if(!whitePawn && !whiteRook && !whiteKnight && !whiteBishop && !whiteQueen   // solo rey blanco contra rey y alfil negros
+                && !blackPawn && !blackRook && !blackKnight && blackBishop && !blackBishop2 && !blackQueen)
+            staleMate = true;
+        else if(!whitePawn && !whiteRook && !whiteKnight && whiteBishop && !whiteBishop2 && !whiteQueen   // rey y alfil blancos, solo contra rey negro
+                && !blackPawn && !blackRook && !blackKnight && !blackBishop && !blackQueen)
+            staleMate = true;
+        
+        else if(!whitePawn && !whiteRook && !whiteKnight && whiteBishop && !whiteBishop2 && !whiteQueen   // rey y alfil blancos, solo contra rey negro y alfil negro y en las casillas del mismo color
+                && !blackPawn && !blackRook && !blackKnight && blackBishop && !blackBishop2  && !blackQueen){
+            if((whiteBishopPiece.getInitialPosition().getY() == 2 && blackBishopPiece.getInitialPosition().getY() == 5) // casillas negras
+                || (whiteBishopPiece.getInitialPosition().getY() == 5 && blackBishopPiece.getInitialPosition().getY() == 2)) // casillas blancas
+                staleMate = true;
+        }
+            
+        
+        return staleMate;
+    }
     /*
     void enablePick(boolean onOff){
         if(onOff){
@@ -655,9 +1064,6 @@ public class Board extends BranchGroup{
 }
 
 
-// para las tablas, comprobar que en ambos colores queda solo el rey || el rey con el caballo || rey con el alfil en el mismo color
-// usar para ello un booleanos que se ponga a false, cuando haya mas piezas de las permitidas
-
 // para sacar el jaque mate, antes de nada saber la pieza (posicion) que nos esta dando jaque...luego, comprobar que no hay ningún jaque de nuestras piezas a la posición que nos está dando el jaque a nosotros
 // después, comprobar las casillas que hay entre la posición que nos da jaque y nuestro rey, guardar en un arraylist de posiciones, comprobar si nuestras piezas dan jaque a dichas posiciones, si alguna da, es que no es mate
-// en última instancia comprobar los movimientos de nuestro rey a su alrededor, si en alguno no hay jaque del enemigo
+// en última instancia comprobar los movimientos de nuestro rey a su alrededor, si en alguno deja de haber jaque del enemigo

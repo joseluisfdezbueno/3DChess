@@ -24,25 +24,46 @@ public class Game {
         
     }
     
+    public static void setControlWindow(ControlWindow cW){
+        controlWindow = cW;
+    }
+    
+    // pone en marcha el cronómetro
     public static void startTimer(Colour colour){
         if(colour == Colour.White)
-     //       System.out.print(controlWindow);
             controlWindow.startWhiteTime();
-        else
-//            System.out.print(controlWindow);            
+        else          
             controlWindow.startBlackTime();            
     }
     
+    // para el cronómetro
     public static void stopTimer(Colour colour){
         if(colour == Colour.White)
             controlWindow.stopWhiteTime();
         else
             controlWindow.stopBlackTime();            
-    }    
+    }       
     
-    public static void setControlWindow(ControlWindow cW){
-        controlWindow = cW;
+    // indica el ganador
+    public static void winner(Colour colour){
+        if(colour == Colour.Black){
+            controlWindow.setTimeBlack("Win Black");
+            controlWindow.setTimeWhite("Win Black");
+        }else{
+            controlWindow.setTimeBlack("Win White");
+            controlWindow.setTimeWhite("Win White");
+        }
+        controlWindow.stopBlackTime();
+        controlWindow.stopWhiteTime();
     }
-            
+    
+    // indica que se han producido tablas
+    public static void staleMate(){
+        controlWindow.setTimeBlack("STALEMATE");
+        controlWindow.setTimeWhite("STALEMATE");
+        
+        controlWindow.stopBlackTime();
+        controlWindow.stopWhiteTime();
+    }    
     
 }

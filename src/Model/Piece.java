@@ -57,6 +57,10 @@ public abstract class Piece extends BranchGroup{
         return position;
     }
     
+    public Position getInitialPosition(){
+        return initialPosition;
+    }    
+    
     public void setPosition(Position position){
         this.position = position;
         System.out.println(this.position.getX() + "  " + this.position.getY());
@@ -67,19 +71,16 @@ public abstract class Piece extends BranchGroup{
         this.position = position;
     }    
     
-    public void upPiece(){
-        //this.position = position;
+    public void upPiece(){    
         Vector3d vector;
         vector = Position.giveBackDrawPosition(this.position);
         vector.y = vector.y + 2;
         this.translate.setTranslate(vector);        
     } 
     
-    public void downPiece(){
-        //this.position = position;
+    public void downPiece(){        
         Vector3d vector;
-        vector = Position.giveBackDrawPosition(this.position);
-        //vector.y = vector.y;
+        vector = Position.giveBackDrawPosition(this.position);        
         this.translate.setTranslate(vector);        
     }     
     

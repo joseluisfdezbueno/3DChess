@@ -54,7 +54,9 @@ public class Pick extends Behavior{
         if(status==AppStatus.SelectBox)
             pickCanvas.setFlags(PickInfo.SCENEGRAPHPATH | PickInfo.CLOSEST_INTERSECTION_POINT);
         else if(status==AppStatus.SelectPiece)
-            pickCanvas.setFlags(ALLOW_BOUNDS_READ); // revisar constante                        
+            pickCanvas.setFlags(ALLOW_BOUNDS_READ); // revisar constante
+        else if(status==AppStatus.Nothing)
+            setEnable(false);
     }
     
     public void setBoard(Board board){
@@ -107,14 +109,21 @@ public class Pick extends Behavior{
                         }else                                                   
                             if(board.allowMove(selected, Position.point3dToBoardPosition(point))){
                                 //selected.setPosition(Position.point3dToBoardPosition(point));
-                                board.changeTurn();
+                                
+                                if(!board.getEndGame()){
+                                    board.changeTurn();
         //                      board.enablePick(false);
-        //                    board.enablePieces(board.getTurn());
-                        
-                                setStatus(status.SelectPiece);
+        //                      board.enablePieces(board.getTurn());                        
+                                    setStatus(status.SelectPiece);
+                                }else
+                                    setStatus(status.Nothing);
                             }   
                         break;
      
+                    case Nothing:    
+                        
+                        break;
+                        
                     default:
                         System.out.println("Fallo al hacer pick");   
                 }
