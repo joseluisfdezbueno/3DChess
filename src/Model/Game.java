@@ -13,6 +13,7 @@ import GUI.ControlWindow;
  */
 public class Game {
     static private ControlWindow controlWindow;
+
     private Game game = new Game();
     
     /*
@@ -43,6 +44,14 @@ public class Game {
         else
             controlWindow.stopBlackTime();            
     }       
+    
+    // rota el tablero
+    static void rotateView(Colour turn) {
+        if(turn == Colour.White)
+            controlWindow.rotateView(0);            
+        else
+            controlWindow.rotateView(1);
+    }    
     
     // indica el ganador
     public static void winner(Colour colour){

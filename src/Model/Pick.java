@@ -80,7 +80,7 @@ public class Pick extends Behavior{
                         pi = pickCanvas.pickClosest();
                         if(pi != null){               
                             //System.out.println(pi.getNode().getParent().getParent());
-                            System.out.println(pi.getNode().getParent().getParent().getParent().getParent().getParent()); // shape3d -> branchGroup -> Model -> Scale -> Translate -> Piece
+                            //System.out.println(pi.getNode().getParent().getParent().getParent().getParent().getParent()); // shape3d -> branchGroup -> Model -> Scale -> Translate -> Piece
                             
                             if(pi.getNode().getParent().getParent().getParent().getParent().getParent() instanceof Piece){
                                 selected = (Piece)pi.getNode().getParent().getParent().getParent().getParent().getParent();
@@ -99,9 +99,8 @@ public class Pick extends Behavior{
                         pickCanvas.setShapeLocation(raton);
                         pi = pickCanvas.pickClosest();                        
                         point = pi.getClosestIntersectionPoint();
-                        
-          
-                        System.out.println("\n " + point.x + " " +  point.y + " " + point.z);
+                                  
+                        //System.out.println("\n " + point.x + " " +  point.y + " " + point.z);
                         
                         if(selected.getPosition().equals(Position.point3dToBoardPosition(point))){
                             setStatus(status.SelectPiece);
@@ -134,28 +133,3 @@ public class Pick extends Behavior{
     }
     
 }        
-
-        //SceneGraphPath camino = new SceneGraphPath();        
-        
-        /* Pick pieza
-        WakeupOnAWTEvent c = (WakeupOnAWTEvent) cond.nextElement();
-        AWTEvent[] e = c.getAWTEvent();
-        MouseEvent raton = (MouseEvent) e[0];
-                
-        switch (raton.getID()){
-            case MouseEvent.MOUSE_CLICKED:
-                pickCanvas.setShapeLocation(raton);
-                PickInfo pi = pickCanvas.pickClosest();
-                if(pi != null){               
-                    //System.out.println(pi.getNode().getParent().getParent());
-                    System.out.println(pi.getNode().getParent().getParent().getParent().getParent().getParent()); // shape3d -> branchGroup -> Model -> Scale -> Translate -> Piece
-                    ((Piece)pi.getNode().getParent().getParent().getParent().getParent().getParent()).upPiece();
-              //     rotacion = (Rotacion) pi.getNode().getParent().getParent(); // shape3d -> sphere -> TransformGroup
-              //     rotacion.pararReanudar();
-                }
-                break;
-            default:
-                System.out.println("Fallo al hacer pick");     
-        }
-        
-        */

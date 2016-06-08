@@ -14,6 +14,7 @@ import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
+import static javax.media.j3d.TransformGroup.ALLOW_TRANSFORM_WRITE;
 import javax.media.j3d.View;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
@@ -31,6 +32,7 @@ public class Universe extends BranchGroup{
     
     private View view;
     private Vista planView, perspectiveView;
+    private TransformGroup viewTransformGroup; // transformacion posición vista del simple universe
     private final Canvas3D canvas;
     private final SimpleUniverse universe;
     
@@ -43,8 +45,8 @@ public class Universe extends BranchGroup{
         // Creamos la vista en planta y la enlazamos al BG universo
         planView = new Vista(canvas);
         //crearVPlanta(posicion, dondeMirar, vup, escala, planoDelantero, planoTrasero)
-        planView.crearVPlanta(new Point3d(0,100,40), new Point3d(0,0,0), new Vector3d(0,0,-1), 0.015f, 0.3f, 200f);
-        this.addChild(planView);
+        planView.crearVPlanta(new Point3d(0, 100, 40), new Point3d(0, 0, 0), new Vector3d(0, 0, -1), 0.015f, 0.3f, 200f);
+        this.addChild(planView);        
         //planView.habilitar();
         
         // Creamos y enlazamos la luz ambiental
@@ -89,7 +91,8 @@ public class Universe extends BranchGroup{
         ViewingPlatform viewingPlatform = new ViewingPlatform();
 
         // La transformación de vista, dónde se está, a dónde se mira, Vup
-        TransformGroup viewTransformGroup = viewingPlatform.getViewPlatformTransform();
+        viewTransformGroup = viewingPlatform.getViewPlatformTransform();
+        viewTransformGroup.setCapability(ALLOW_TRANSFORM_WRITE);
         Transform3D viewTransform3D = new Transform3D();
         viewTransform3D.lookAt (new Point3d (20,20,20), new Point3d (0,0,0), new Vector3d (0,1,0));
         viewTransform3D.invert();
@@ -131,7 +134,25 @@ public class Universe extends BranchGroup{
 
     public void enablePlanView() {
         view.removeAllCanvas3Ds();
-        planView.habilitar();
+        planView.habilitar();      
     }
         
+    public void rotateView(int i){
+        if(i==0){
+            planView.setPlanView(new Point3d(0, 100, 40), new Point3d(0, 0, 0), new Vector3d(0, 0, -1));
+            
+            Transform3D viewTransform3D = new Transform3D();
+            viewTransform3D.lookAt (new Point3d (20,20,20), new Point3d (0,0,0), new Vector3d (0,1,0));
+            viewTransform3D.invert();
+            viewTransformGroup.setTransform (viewTransform3D);        
+        }else{
+            planView.setPlanView(new Point3d(0, 100, -40), new Point3d(0, 0, 0), new Vector3d(0, 0, 1));                         
+            
+            Transform3D viewTransform3D = new Transform3D();
+            viewTransform3D.lookAt (new Point3d (-20, 20,-20), new Point3d (0,0,0), new Vector3d (0,1,0));
+            viewTransform3D.invert();
+            viewTransformGroup.setTransform (viewTransform3D);             
+        }
+    }
+    
 }

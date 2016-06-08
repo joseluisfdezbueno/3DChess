@@ -8,6 +8,8 @@ package Model;
 
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
 import javax.vecmath.Vector3d;
 
 /**
@@ -43,12 +45,19 @@ public class Scene extends BranchGroup{
         // Creamos y enlazamos pick
         pick = new Pick(canvas, this);              
         this.addChild(pick);
-                                                       
+                                                               
         // Creamos y enlazamos el tablero
         // Board (pathModel, position)
         board = new Board("tablero\\ChessBoard2.obj", new Vector3d(0, 0, 0));
         this.addChild(board);
         
+        /*
+        Transform3D t3d = new Transform3D();
+        t3d.rotY(Math.PI);
+        TransformGroup tg = new TransformGroup(t3d);
+        tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        board.addChild(tg);
+        */
                               
         //############## Black Pieces ##############        
             

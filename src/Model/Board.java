@@ -88,12 +88,14 @@ public class Board extends BranchGroup{
     public void changeTurn(){
         Game.stopTimer(turn);
         
-        if(turn == Colour.White)
+        if(turn == Colour.White){
             turn = Colour.Black;
-        else
+        }else{
             turn = Colour.White;
+        }
         
         Game.startTimer(turn);
+        Game.rotateView(turn);
     }    
     
     // añade una pieza al grafo de escena, y al array de piezas
@@ -122,7 +124,7 @@ public class Board extends BranchGroup{
             board[p.position.getX()][p.position.getY()] = p;     
     }    
     
-    // 
+    // añade una pieza a la matriz del tablero
     public void addPieceBoard(Piece piece){
         board[piece.getPosition().getX()][piece.getPosition().getY()] = piece;  
     }
@@ -138,18 +140,16 @@ public class Board extends BranchGroup{
         
         if(allow){
             if(piece instanceof Pawn){ // si es un peón
-                System.out.println("Soy un peón");
+                //System.out.println("Soy un peón");
                 if(pos.getY()-piece.getPosition().getY() != 0){ // si el peón avanza en diagonal 
                     if (board[pos.getX()][pos.getY()]!=null){  // si la pieza contraria es del otro color, podemos movernos y eliminamos la que haya 
                         if(board[pos.getX()][pos.getY()].getColour() == piece.getColour()){
-                            allow = false;
-                            System.out.println("Peon del mismo color");
+                            allow = false;                       
                         }else{
                             remove = true;
-                            System.out.println("Estoy comiendo");
+                            //System.out.println("Estoy comiendo");
                         }
                     }else{
-                        System.out.println("Estoy comiendo");                        
                         allow = false;                
                     }
                 }else{                                          // el peón avanza de frente
@@ -161,7 +161,7 @@ public class Board extends BranchGroup{
                 }
                 
             }else if(piece instanceof King){
-                System.out.println("Soy un Rey");
+                //System.out.println("Soy un Rey");
                 
                 // comprobamos que podemos movernos a la posición adyacente
                 if(board[pos.getX()][pos.getY()]!=null)
@@ -179,10 +179,7 @@ public class Board extends BranchGroup{
                                 board[0][3] = board[0][0];
                                 board[0][0] = null;
                             }else
-                                allow = false;
-                    //}else
-                     //   allow = false;
-                
+                                allow = false;                
                     }else if(piece.getColour() == Colour.Black && this.allowLBCastling && !this.blackCheck // negras
                         && !checkInPosition(new Position(7, 2), Colour.White, false) && !checkInPosition(new Position(7, 3), Colour.White, false)){
                             if(this.recta(piece.getPosition(), new Position(7, 0))){
@@ -190,8 +187,7 @@ public class Board extends BranchGroup{
                                 board[7][3] = board[0][0];
                                 board[7][0] = null;                                                                            
                             }else
-                                allow = false;
-                            
+                                allow = false;                            
                     }else
                         allow = false;
                 }else if(pos.getY() - piece.getPosition().getY() == 2){  // enroque a derechas
@@ -202,10 +198,7 @@ public class Board extends BranchGroup{
                                 board[0][5] = board[0][7];
                                 board[0][7] = null;
                             }else
-                                allow = false;
-                    //else
-                    //    allow = false;
-                
+                                allow = false;                
                     }else if(piece.getColour() == Colour.Black && this.allowRBCastling && !this.blackCheck    // negras
                         && !checkInPosition(new Position(7, 5), Colour.White, false) && !checkInPosition(new Position(7, 6), Colour.White, false)){
                             if(this.recta(piece.getPosition(), new Position(7, 7))){
@@ -215,19 +208,18 @@ public class Board extends BranchGroup{
                             }else
                                 allow = false;                                                               
                     }else
-                        allow = false;
-                    
+                        allow = false;                    
                 }
-
             }else if(piece instanceof Knight){
-                System.out.println("Soy un caballo");
+                //System.out.println("Soy un caballo");
                 if(board[pos.getX()][pos.getY()]!=null) // comprobamos que podemos movernos a la posición
                     if(board[pos.getX()][pos.getY()].getColour() == piece.getColour())
                         allow = false;
                     else
                         remove = true;
+                
             }else if (piece instanceof Rook){
-                System.out.println("Soy una torre");
+                //System.out.println("Soy una torre");
                 if(recta(piece.getPosition(),pos))
                 {//si nos podemos mover
                     if (board[pos.getX()][pos.getY()]!=null)
@@ -235,10 +227,10 @@ public class Board extends BranchGroup{
                             allow = false;
                         else
                             remove = true;
-                }else allow = false;                
+                }else allow = false;                                
                 
             }else if (piece instanceof Bishop){
-                System.out.println("Soy un alfil");
+                //System.out.println("Soy un alfil");
                 if(diagonal(piece.getPosition(), pos))  // comprobamos que se puede mover
                 {
                     if (board[pos.getX()][pos.getY()]!=null)
@@ -251,7 +243,7 @@ public class Board extends BranchGroup{
                 }else allow = false;
                 
             }else if (piece instanceof Queen){
-                System.out.println("Soy la Reina");
+                //System.out.println("Soy la Reina");
                 if(piece.getPosition().getX() == pos.getX() || piece.getPosition().getY() == pos.getY()){ // si nos movemos linealmente
                     if(recta(piece.getPosition(),pos)){       //si nos podemos mover
                         if (board[pos.getX()][pos.getY()]!=null)
@@ -259,7 +251,8 @@ public class Board extends BranchGroup{
                                 allow = false;
                             else    
                                 remove = true;
-                    }
+                    }else
+                        allow = false;
                 }else{                                                     // si nos movemos diagonalmente
                     if(diagonal(piece.getPosition(), pos)){
                         if (board[pos.getX()][pos.getY()]!=null)
@@ -267,7 +260,8 @@ public class Board extends BranchGroup{
                                 allow =false;
                             else
                                 remove = true;                        
-                    }
+                    }else
+                        allow = false;                                            
                 }
             }
         }       
@@ -312,7 +306,7 @@ public class Board extends BranchGroup{
                 board[pos.getX()][pos.getY()] = auxPiece;
                 myPieces.add(auxPiece);
             }else 
-                board[pos.getX()][pos.getY()] = null;                        
+                board[pos.getX()][pos.getY()] = null; 
         }
         
         
@@ -440,10 +434,9 @@ public class Board extends BranchGroup{
                     if(this.isThereCheckMate(piece.getPosition(), blackKingPosition,  Colour.White)){
                         Game.winner(Colour.White);
                         endGame = true;
-                        //Scene.setPickMode(AppStatus.Nothing);
                         System.out.println("Jaque MATE a las NEGRAS");
-                    }
-                    System.out.println("Jaque a las negras");
+                    }else
+                        System.out.println("Jaque a las negras");
                 }
             }
             
@@ -452,20 +445,20 @@ public class Board extends BranchGroup{
                 if(whiteCheck){
                     if(this.isThereCheckMate(piece.getPosition(), whiteKingPosition,  Colour.Black)){
                         Game.winner(Colour.Black);
-                        endGame = true;
-                        //Scene.setPickMode(AppStatus.Nothing);
+                        endGame = true;                        
                         System.out.println("Jaque MATE a las BLANCAS");                        
-                    }
-                    System.out.println("Jaque a las blancas");
+                    }else
+                        System.out.println("Jaque a las blancas");
                 }
             }
             
-            if(this.isThereStaleMate()){  // comprobamos si hay tablas
-                //Scene.setPickMode(AppStatus.Nothing);
-                endGame = true;
-                Game.staleMate();
+            // Comprobamos si hay tablas            
+            if(!endGame){
+                if(this.isThereStaleMate()){
+                    endGame = true;
+                    Game.staleMate();
+                }            
             }
-            
         }            
         return allow;    
     }
@@ -482,7 +475,7 @@ public class Board extends BranchGroup{
     }
     
     public boolean rectaX (Position ini, Position next){
-        System.out.println("Recta X");
+        //System.out.println("Recta X");
         int i,j;
         if (ini.getX()<next.getX()){
             i = ini.getX()+1;
@@ -499,7 +492,7 @@ public class Board extends BranchGroup{
     }
     
     public boolean rectaY(Position ini, Position next){
-        System.out.println("Recta Y");
+        //System.out.println("Recta Y");
         int i,j;
         if (ini.getY()<next.getY()){
             i = ini.getY()+1;
@@ -609,16 +602,17 @@ public class Board extends BranchGroup{
         this.addPieceBoard(queen);      
     }    
     
-    // Devuelve si las piezas de un color dan jaque a una posición dada 
+    // Devuelve si las piezas de un color pueden alcanzar una posición dada 
     public boolean checkInPosition(Position pos, Colour colour, boolean fPiece){ // devuelve si hay jaque a una posición por un color
         boolean check = false;
         boolean frontPiece = fPiece;  // si es true indica que no podemos avanzar en diagonal, si no de frente
         
-        for(Piece piece : myPieces)
+        for(Piece piece : myPieces){
             if(piece.getColour() == colour){
+                //System.out.println("pieza que se está comprobando si da jaque" + piece + " " + piece.getColour());
                 if(piece.validMove(pos)){
                     if(piece instanceof Pawn){
-                        if(fPiece){
+                        if(!fPiece){
                             if(Math.abs(piece.getPosition().getY() - pos.getY()) == 1){
                                 if(colour == Colour.Black){
                                     if(pos.getX()-piece.getPosition().getX() == -1){
@@ -684,6 +678,7 @@ public class Board extends BranchGroup{
                     }                                        
                 }                               
             }                
+        }
                 
         return check;
     }
@@ -718,8 +713,7 @@ public class Board extends BranchGroup{
                                                                      
             }
         
-        }else if(Math.abs(ini.getX()-next.getX())==Math.abs(ini.getY()-next.getY())
-                && (Math.abs(ini.getX()-next.getX())==Math.abs(ini.getY()-next.getY()) && Math.abs(ini.getX()-next.getX())==1)){ // diagonal
+        }else if(Math.abs(ini.getX()-next.getX())==Math.abs(ini.getY()-next.getY()) && Math.abs(ini.getX()-next.getX())!=1){ // diagonal
                                   
             if( ini.getX()<next.getX() ){  //diagonal para arriba
                 if (ini.getY()<next.getY() ){  //diagonal para arriba derecha
@@ -767,7 +761,7 @@ public class Board extends BranchGroup{
                     }while(i>=k && j>=l);                                        
                 }                                
             }
-                
+            
         }else
             positions = null;
         
@@ -775,10 +769,9 @@ public class Board extends BranchGroup{
         return positions;
     }
     
-    // devuelve si podemos mover una pieza, donde no sufra jaque nuestro rey
+    // devuelve si podemos mover una pieza, donde no sufra jaque nuestro rey, simulando el board resultante
     public boolean moveWithoutCheck(Piece piece, Position pos, boolean remove){
         boolean allow = true;
-        //boolean remove = false;
         Position kingPosition = null;
         Piece auxPiece = null;
         Position auxPos = piece.getPosition();   
@@ -797,14 +790,14 @@ public class Board extends BranchGroup{
                         
             if(piece instanceof King)
                 kingPosition = piece.getPosition();
+            
             if(piece.getColour() == Colour.White){
-                //if(this.checkInPosition(kingPosition, Colour.Black))
+                if(this.checkInPosition(kingPosition, Colour.Black, false))
                     allow = false;
-            }else
-                //if(this.checkInPosition(kingPosition, Colour.White))
+            }else{
+                if(this.checkInPosition(kingPosition, Colour.White, false))
                     allow = false;                
-            //else
-            //    whiteCheck = false;
+            }
             
             // volvemos el board a su forma original
             piece.setPositionNotDraw(auxPos);
@@ -818,14 +811,33 @@ public class Board extends BranchGroup{
         return allow;
     }
     
+    // devuelve si una pieza puede moverse a una casilla dejando de haber jaque
+    public boolean anyMoveToPosition(int xPosition, int yPosition, Piece p){
+        boolean allow = false;
+        Piece piece = p;
+        Position pos = new Position(xPosition, yPosition);
+                
+        if(xPosition >= 0 && xPosition <= 7 && yPosition >= 0 && yPosition <= 7){
+            //System.out.println("xPos " + xPosition + " Ypos: " + yPosition);
+            if(board[xPosition][yPosition]!=null){ 
+                if(board[xPosition][yPosition].getColour() == piece.getColour())
+                    allow = false;
+                else
+                    allow = moveWithoutCheck(piece, pos, true);
+            }else
+                allow = moveWithoutCheck(piece, pos, false);
+        }
+        
+        return allow;
+    }
                
     // devuelve si el rey puede moverse a alguna posición a su alrededor. Colour: color del rey
     public boolean anyMoveForKing(Colour colour){
         boolean allow = false;
         Position kingPosition = null;
         Piece piece = null;
-        int xPosition;
-        int yPosition;                
+        int xPosition = 0;
+        int yPosition = 0;                
         
         if(colour == Colour.White){
             kingPosition = this.whiteKingPosition;            
@@ -834,118 +846,27 @@ public class Board extends BranchGroup{
         
         piece = board[kingPosition.getX()][kingPosition.getY()];
         
-        // arriba a la izq
-        xPosition = kingPosition.getX()+1;
-        yPosition = kingPosition.getY()-1;
-                
-        if(xPosition >= 0 && yPosition >= 0){
-            if(board[xPosition][yPosition]!=null){ // arriba a la izq
-                if(board[xPosition][yPosition].getColour() == piece.getColour())
-                    allow = false;
-                else
-                    allow = moveWithoutCheck(piece, kingPosition, true);
-            }else
-                allow = moveWithoutCheck(piece, kingPosition, false);
-        }
-        
-        // arriba
-        xPosition = kingPosition.getX()+1;
-        yPosition = kingPosition.getY();
-        if(xPosition >= 0 && yPosition >= 0){
-            
-            if(board[xPosition][yPosition]!=null){ // arriba a la izq
-                if(board[xPosition][yPosition].getColour() == piece.getColour())
-                    allow = false;
-                else
-                    allow = moveWithoutCheck(piece, kingPosition, true);
-            }else
-                allow = moveWithoutCheck(piece, kingPosition, false);
-        }
-        
-        // arriba a la der
-        xPosition = kingPosition.getX()+1;
-        yPosition = kingPosition.getY()+1;
-        if(xPosition >= 0 && yPosition >= 0){
-            
-            if(board[xPosition][yPosition]!=null){ // arriba a la izq
-                if(board[xPosition][yPosition].getColour() == piece.getColour())
-                    allow = false;
-                else
-                    allow = moveWithoutCheck(piece, kingPosition, true);
-            }else
-                allow = moveWithoutCheck(piece, kingPosition, false);
-        }
-        
-        // a la izq
         xPosition = kingPosition.getX();
-        yPosition = kingPosition.getY()-1;
-        if(xPosition >= 0 && yPosition >= 0){
-            
-            if(board[xPosition][yPosition]!=null){ // arriba a la izq
-                if(board[xPosition][yPosition].getColour() == piece.getColour())
-                    allow = false;
-                else
-                    allow = moveWithoutCheck(piece, kingPosition, true);
-            }else
-                allow = moveWithoutCheck(piece, kingPosition, false);
-        }
+        yPosition = kingPosition.getY();        
         
-        // a la der
-        xPosition = kingPosition.getX();
-        yPosition = kingPosition.getY()+1;
-        if(xPosition >= 0 && yPosition >= 0){
-            
-            if(board[xPosition][yPosition]!=null){ // arriba a la izq
-                if(board[xPosition][yPosition].getColour() == piece.getColour())
-                    allow = false;
-                else
-                    allow = moveWithoutCheck(piece, kingPosition, true);
-            }else
-                allow = moveWithoutCheck(piece, kingPosition, false);
-        }
+        // comprohamos si podemos mover el rey sin que haya jaque
+        if(anyMoveToPosition(xPosition+1, yPosition-1, piece))          // arriba a la izq
+            allow = true;
+        else if(anyMoveToPosition(xPosition+1, yPosition, piece))   // arriba
+            allow = true;
+        else if(anyMoveToPosition(xPosition+1, yPosition+1, piece))   // arriba a la der
+            allow = true;
+        else if(anyMoveToPosition(xPosition, yPosition-1, piece))   // izq
+            allow = true;
+        else if(anyMoveToPosition(xPosition, yPosition+1, piece))   // der
+            allow = true;
+        else if(anyMoveToPosition(xPosition-1, yPosition-1, piece))   // abajo izq
+            allow = true;
+        else if(anyMoveToPosition(xPosition-1, yPosition, piece))   // abajo
+            allow = true;
+        else if(anyMoveToPosition(xPosition-1, yPosition+1, piece))   // abajo der
+            allow = true;
         
-        // abajo a la izq
-        xPosition = kingPosition.getX()-1;
-        yPosition = kingPosition.getY()-1;
-        if(xPosition >= 0 && yPosition >= 0){
-            
-            if(board[xPosition][yPosition]!=null){ // arriba a la izq
-                if(board[xPosition][yPosition].getColour() == piece.getColour())
-                    allow = false;
-                else
-                    allow = moveWithoutCheck(piece, kingPosition, true);
-            }else
-                allow = moveWithoutCheck(piece, kingPosition, false);
-        }
-        
-        // abajo
-        xPosition = kingPosition.getX()-1;
-        yPosition = kingPosition.getY();
-        if(xPosition >= 0 && yPosition >= 0){
-            
-            if(board[xPosition][yPosition]!=null){ // arriba a la izq
-                if(board[xPosition][yPosition].getColour() == piece.getColour())
-                    allow = false;
-                else
-                    allow = moveWithoutCheck(piece, kingPosition, true);
-            }else
-                allow = moveWithoutCheck(piece, kingPosition, false);
-        }
-        
-        // abajo a la der
-        xPosition = kingPosition.getX()-1;
-        yPosition = kingPosition.getY()+1;
-        if(xPosition >= 0 && yPosition >= 0){
-            
-            if(board[xPosition][yPosition]!=null){ // arriba a la izq
-                if(board[xPosition][yPosition].getColour() == piece.getColour())
-                    allow = false;
-                else
-                    allow = moveWithoutCheck(piece, kingPosition, true);
-            }else
-                allow = moveWithoutCheck(piece, kingPosition, false);
-        }
-
         return allow;
     }    
     
@@ -956,34 +877,41 @@ public class Board extends BranchGroup{
         ArrayList<Position> positions = new ArrayList();
                 
         // comprobamos si alguna de las piezas puede comerse a la que nos da jaque
-        if(colour == Colour.Black) // si el jaque es de las negras a las blancas
+        if(colour == Colour.Black){ // si el jaque es de las negras a las blancas
             if(this.checkInPosition(checkPosition, Colour.White, false))
                 checkMate = false;
-        else
+        }else
             if(this.checkInPosition(checkPosition, Colour.Black, false))
                 checkMate = false;
         
         // si no podemos comernos la pieza que nos da jaque, vamos, si hay alguna pieza que podamos poner por medio, entre ella y el rey
         if(checkMate){
+          //  System.out.println("CheckPostion " + checkPosition.getX() + "---" + checkPosition.getY());
+          //  System.out.println("kingPosition " + kingPosition.getX() + "---" + kingPosition.getY());            
+            
             positions = getPossBetweenPoss(checkPosition, kingPosition); // obtenemos las posiciones intermedias
             if(positions != null){
                 for(Position p : positions){
-                    if(colour == Colour.Black) // si el jaque es de las negras a las blancas
+                    //System.out.println(p.getX() + "---" + p.getY());
+                    if(colour == Colour.Black){ // si el jaque es de las negras a las blancas
                         if(this.checkInPosition(p, Colour.White, true))
                             checkMate = false;
-                    else
+                    }else
                         if(this.checkInPosition(p, Colour.Black, true))
                             checkMate = false;                
                 }
             }
+                //System.out.println("no hay posiciones por medio");
         }
+        
+        //System.out.println("chemate: " + checkMate);
         
         // comprobamos si con algún movimiento del rey deja de haber jaque mate
         if(checkMate){
-            if(colour == Colour.Black) // si el jaque es de las negras a las blancas
+            if(colour == Colour.Black){ // si el jaque es de las negras a las blancas
                 if(anyMoveForKing(Colour.White))
                     checkMate = false;
-            else
+            }else
                 if(anyMoveForKing(Colour.Black))
                     checkMate = false;                        
         }                                        
@@ -1061,8 +989,7 @@ public class Board extends BranchGroup{
                 || (whiteBishopPiece.getInitialPosition().getY() == 5 && blackBishopPiece.getInitialPosition().getY() == 2)) // casillas blancas
                 staleMate = true;
         }
-            
-        
+                    
         return staleMate;
     }
     
@@ -1090,8 +1017,3 @@ public class Board extends BranchGroup{
     */
         
 }
-
-
-// para sacar el jaque mate, antes de nada saber la pieza (posicion) que nos esta dando jaque...luego, comprobar que no hay ningún jaque de nuestras piezas a la posición que nos está dando el jaque a nosotros
-// después, comprobar las casillas que hay entre la posición que nos da jaque y nuestro rey, guardar en un arraylist de posiciones, comprobar si nuestras piezas dan jaque a dichas posiciones, si alguna da, es que no es mate
-// en última instancia comprobar los movimientos de nuestro rey a su alrededor, si en alguno deja de haber jaque del enemigo

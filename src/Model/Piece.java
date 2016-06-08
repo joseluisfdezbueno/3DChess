@@ -63,7 +63,7 @@ public abstract class Piece extends BranchGroup{
     
     public void setPosition(Position position){
         this.position = position;
-        System.out.println(this.position.getX() + "  " + this.position.getY());
+        //System.out.println(this.position.getX() + "  " + this.position.getY());
         this.translate.setTranslate(Position.giveBackDrawPosition(this.position));
     }
     

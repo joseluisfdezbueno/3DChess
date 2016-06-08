@@ -31,6 +31,8 @@ public class Vista extends TransformGroup{
     public void crearVPlanta(Point3d posicion, Point3d dondeMirar, Vector3d vup, float escala, 
             float planoDelantero, float planoTrasero){
         
+        this.setCapability(ALLOW_TRANSFORM_WRITE);
+        
         // TransformGroup para posicionar y orientar la vista
         Transform3D transformPlanta = new Transform3D();
         transformPlanta.lookAt(posicion, dondeMirar, vup);
@@ -60,6 +62,8 @@ public class Vista extends TransformGroup{
     
     public void crearVPerspSujetiva(Point3d posicion, Point3d dondeMirar, Vector3d vup, float anguloApertura, 
             float planoDelantero, float planoTrasero){
+        
+        this.setCapability(ALLOW_TRANSFORM_WRITE);        
  
         // TransformGroup para posicionar y orientar la vista
         Transform3D transformPersp = new Transform3D();
@@ -107,6 +111,15 @@ public class Vista extends TransformGroup{
             view.removeCanvas3D(this.canvas); // Se quita el Canvas al View
             activada = false;
         }
+    }
+    
+    public void setPlanView(Point3d posicion, Point3d dondeMirar, Vector3d vup){
+        // TransformGroup para posicionar y orientar la vista
+        Transform3D transformPlanta = new Transform3D();
+        transformPlanta.lookAt(posicion, dondeMirar, vup);
+        transformPlanta.invert();
+                
+        this.setTransform(transformPlanta);
     }
             
 }

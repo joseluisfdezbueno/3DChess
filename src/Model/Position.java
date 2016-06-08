@@ -230,7 +230,7 @@ public class Position{
     public static Position point3dToBoardPosition(Point3d p){    
         Position pos = new Position();
         
-        System.out.println("Punto seleccionado X: " + p.x + " Z: " + p.z);
+        //System.out.println("Punto seleccionado X: " + p.x + " Z: " + p.z);
                 
         // 1º Fila
         if(p.x > -width*4 && p.x < -width*3 && p.z < width*4 && p.z > width*3 && p.y == surfaceBoardHeight)
