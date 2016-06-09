@@ -382,11 +382,10 @@ public class Position{
             pos.setPosition(7, 6);                        
         else if(p.x < width*4 && p.x > width*3 && p.z < -width*3 && p.z > -width*4 && p.y == surfaceBoardHeight)
             pos.setPosition(7, 7);            
-        
+    
+        else
+            pos = null;
 
-//        else
-  //          pos.setPosition(3, 3);            
-        
         return pos;
     }
 }

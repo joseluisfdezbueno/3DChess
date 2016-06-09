@@ -46,7 +46,7 @@ public class Game {
     }       
     
     // rota el tablero
-    static void rotateView(Colour turn) {
+    public static void rotateView(Colour turn) {
         if(turn == Colour.White)
             controlWindow.rotateView(0);            
         else

@@ -69,7 +69,8 @@ public class Pick extends Behavior{
         AWTEvent[] e = c.getAWTEvent();
         MouseEvent raton = (MouseEvent) e[0];
         Point3d point;        
-        PickInfo pi;        
+        PickInfo pi;       
+        Position pos = null;          
         
         switch(raton.getID()){
             case MouseEvent.MOUSE_CLICKED:
@@ -97,26 +98,32 @@ public class Pick extends Behavior{
                         break;
                     case SelectBox:
                         pickCanvas.setShapeLocation(raton);
-                        pi = pickCanvas.pickClosest();                        
-                        point = pi.getClosestIntersectionPoint();
-                                  
-                        //System.out.println("\n " + point.x + " " +  point.y + " " + point.z);
+                        pi = pickCanvas.pickClosest();     
                         
-                        if(selected.getPosition().equals(Position.point3dToBoardPosition(point))){
-                            setStatus(status.SelectPiece);
-                            selected.downPiece(); // bajamos la pieza para elegir otra
-                        }else                                                   
-                            if(board.allowMove(selected, Position.point3dToBoardPosition(point))){
-                                //selected.setPosition(Position.point3dToBoardPosition(point));
-                                
-                                if(!board.getEndGame()){
-                                    board.changeTurn();
-        //                      board.enablePick(false);
-        //                      board.enablePieces(board.getTurn());                        
+                        if(pi != null){
+                            point = pi.getClosestIntersectionPoint();
+
+                            //System.out.println("\n " + point.x + " " +  point.y + " " + point.z);
+
+                            pos = Position.point3dToBoardPosition(point);
+                            if(pos != null){                             
+                                if(selected.getPosition().equals(Position.point3dToBoardPosition(point))){
                                     setStatus(status.SelectPiece);
-                                }else
-                                    setStatus(status.Nothing);
-                            }   
+                                    selected.downPiece(); // bajamos la pieza para elegir otra
+                                }else                                                   
+                                    if(board.allowMove(selected, Position.point3dToBoardPosition(point))){
+                                        //selected.setPosition(Position.point3dToBoardPosition(point));
+
+                                        if(!board.getEndGame()){
+                                            board.changeTurn();
+                //                      board.enablePick(false);
+                //                      board.enablePieces(board.getTurn());                        
+                                            setStatus(status.SelectPiece);
+                                        }else
+                                            setStatus(status.Nothing);
+                                    }   
+                            }
+                        }
                         break;
      
                     case Nothing:    
